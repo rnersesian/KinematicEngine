@@ -19,12 +19,16 @@ class GameEngine:
         self.window_width = window_width
         self.window_height = window_height
         self.window_name = window_name
-        
+        self.camera: Camera2D = Camera2D()
+        self.camera.target = Vector2(0, 0)  # What the camera is looking at
+        self.camera.offset = Vector2(0, 0)  # Offset from target
+        self.camera.rotation = 0.0
+        self.camera.zoom = 1.0
         background_color: Color = DARKGRAY
         
         
     def Run(self):
-        init_window(self.window_width, self.window_height, self.window_name)
+        init_window(self.windowpin_width, self.window_height, self.window_name)
         
         while not window_should_close():
             begin_drawing()
@@ -32,9 +36,15 @@ class GameEngine:
 
             self.delta = get_frame_time()
             self.time += self.delta
+
+            # TODO : Implement camera with mouse button
+            begin_mode_2d(self.camera)
             
             self.Update()
             self.DrawGizmo()
+
+            end_mode_2d()
+
             
             end_drawing()
         close_window()
