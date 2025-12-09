@@ -7,11 +7,9 @@ class GameObject(ABC):
         self.children: list[GameObject] = []
         self.position: Vector2 = position
         self.rotation: float = rotation
+        self.scale = Vector2(1,1)
         self.parent = parent
         self.is_selected = False
-            
-    def Draw(self):
-        pass
     
     def Update(self):
         pass
@@ -21,6 +19,14 @@ class GameObject(ABC):
         
     def Rotate(self, amount):
         self.rotation += amount
+
+    @abstractmethod
+    def Draw(self):
+        pass
+
+    def Scale(self, amount: Vector2):
+        self.scale.x *= amount.x
+        self.scale.y *= amount.y
 
         
 from .kinematic_node import KinematicNode
