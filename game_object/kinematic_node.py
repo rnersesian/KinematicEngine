@@ -1,7 +1,6 @@
 from pyray import *
 from . import GameObject
-from utils.shape import draw_rotated_ellipse
-import math
+from utils.shapes import draw_rotated_ellipse
 
 class KinematicNode(GameObject):
     

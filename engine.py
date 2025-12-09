@@ -86,19 +86,35 @@ class GameEngine:
             gameobject.Draw()
         
         mouse_delta = get_mouse_delta()
+
+        # self.camera.target.x += self.delta * 10.
         
-        if is_mouse_button_released(0) and vector2_length(mouse_delta) < 0.1:
+        # TODO : Write custom mouse management function
+        # should add camera.target to mouse position to get world to screen
+        if is_mouse_button_down(0):
+            # self.camera.target.x -= mouse_delta.x
+            # self.camera.target.y -= mouse_delta.y
+            self.camera.offset.x += mouse_delta.x
+            self.camera.offset.y += mouse_delta.y
+            # self.camera.offset = self.camera.target
+        
+        elif is_mouse_button_released(0) and vector2_length(mouse_delta) < 0.1:
         # Object selection
-            self.select_on_clic()
+            self.ClickSelectObject()
         elif is_mouse_button_down(0):
         # Object Translation
             try:
                 self.selected.Translate(get_mouse_delta())
             except:
                 pass
+
+
+    def ManageMouse(self):
+        mouse_pos = get_mouse_position()
+        
             
 
-    def select_on_clic(self) -> GameObject:
+    def ClickSelectObject(self) -> GameObject:
         try:
             self.selected.is_selected = False
             self.selected = None
@@ -116,7 +132,7 @@ class GameEngine:
         if temp_selected:
             self.selected = temp_selected
             self.selected.is_selected = True
-        
+    
     
     
 def main():

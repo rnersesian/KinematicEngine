@@ -10,7 +10,7 @@ class GameObject(ABC):
         self.scale = Vector2(1,1)
         self.parent = parent
         self.is_selected = False
-    
+
     def Update(self):
         pass
     
