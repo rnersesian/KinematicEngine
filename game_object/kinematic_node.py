@@ -10,12 +10,4 @@ class KinematicNode(GameObject):
     
 
     def Draw(self):
-        # draw_circle_v(self.position, self.radius, YELLOW)
-        draw_rotated_ellipse(
-            self.position.x,
-            self.position.y,
-            self.radius * self.scale.x,
-            self.radius * self.scale.y,
-            self.rotation,
-            YELLOW
-        )
+        draw_circle_v(self.position, self.radius, YELLOW)

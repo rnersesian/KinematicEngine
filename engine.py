@@ -1,5 +1,6 @@
 from pyray import *
 from game_object import *
+from utils import ScreenLogger
 import math
 
 class GameEngine:
@@ -11,22 +12,28 @@ class GameEngine:
             KinematicNode(position=Vector2(350, 550)),
         ]
         self.selected: GameObject = None
-        self.select_radius = 5.
+        self.select_radius: float = 5.
         
         self.delta: float = 1.0 / 60.0
         self.time: float = 0
         
-        self.window_width = window_width
-        self.window_height = window_height
-        self.window_name = window_name
+        self.window_width: int = window_width
+        self.window_height: int = window_height
+        self.window_name: str = window_name
 
         self.camera: Camera2D = Camera2D()
-        self.camera.target = Vector2(0, 0)
-        self.camera.offset = Vector2(0, 0) # TODO : check what the fuck it is
+        self.camera.target = Vector2(0, 0) # TODO: wut ?
+        self.camera.offset = Vector2(0, 0)
         self.camera.rotation = 0.0
         self.camera.zoom = 1.0
         
-        background_color: Color = DARKGRAY
+        self.mouse = Mouse()
+        
+        self.grid: InfiniteGrid2D = InfiniteGrid2D(100, 100)
+        
+        self.background_color: Color = DARKGRAY
+        
+        self.DebugList: list[ScreenLogger] = [self.mouse, self.gameobjects[2]]
         
         
     def Run(self):
@@ -34,25 +41,20 @@ class GameEngine:
         
         while not window_should_close():
             begin_drawing()
-            clear_background(DARKGRAY)
-
-            self.delta = get_frame_time()
-            self.time += self.delta
-
-            # TODO : Implement camera with mouse button
+            clear_background(self.background_color)
+            
             begin_mode_2d(self.camera)
             
             self.Update()
-            self.DrawGizmo()
-
             end_mode_2d()
 
             
             end_drawing()
         close_window()
-        
+
         
     def DrawGizmo(self):
+        """Drawing gizmo with X and Y axis"""
         if self.selected is None:
             return
         draw_line(
@@ -81,39 +83,53 @@ class GameEngine:
         
 
     def Update(self):
-
+        """Where the behaviour of the engine is coded"""
+        # Manage time variables
+        self.delta = get_frame_time()
+        self.time += self.delta
+        
+        # Mouse inputs
+        self.ManageMouse()
+        
+        self.grid.Draw()
+        
+        
         for gameobject in self.gameobjects:
             gameobject.Draw()
+            
+        for i in range(len(self.DebugList)):
+            draw_text(self.DebugList[i].LogOnScreen(), 20 - int(self.camera.offset.x), 20 - int(self.camera.offset.y) + i * 30, 20, WHITE)
         
-        mouse_delta = get_mouse_delta()
-
-        # self.camera.target.x += self.delta * 10.
-        
-        # TODO : Write custom mouse management function
-        # should add camera.target to mouse position to get world to screen
-        if is_mouse_button_down(0):
-            # self.camera.target.x -= mouse_delta.x
-            # self.camera.target.y -= mouse_delta.y
-            self.camera.offset.x += mouse_delta.x
-            self.camera.offset.y += mouse_delta.y
-            # self.camera.offset = self.camera.target
-        
-        elif is_mouse_button_released(0) and vector2_length(mouse_delta) < 0.1:
-        # Object selection
-            self.ClickSelectObject()
-        elif is_mouse_button_down(0):
-        # Object Translation
-            try:
-                self.selected.Translate(get_mouse_delta())
-            except:
-                pass
+        self.DrawGizmo()
 
 
     def ManageMouse(self):
-        mouse_pos = get_mouse_position()
+        mouse = self.mouse
+        # Update mouse data
+        mouse.position = get_mouse_position()
+        mouse.delta = get_mouse_delta()
+        mouse.world_position = vector2_subtract(mouse.position, self.camera.offset)
         
+        if is_mouse_button_down(2): 
+            # Camera movement with middle click
+            self.camera.offset = vector2_add(self.camera.offset, mouse.delta)
+        
+        elif is_mouse_button_released(0) and vector2_length(mouse.delta) < 0.05:
+            # Select gameobject if mouse is still
+            self.ClickSelectObject()
             
-
+        
+        if is_mouse_button_down(0) and self.selected and vector2_distance(mouse.world_position, self.selected.position) < self.select_radius:
+            mouse.grab = True
+        elif is_mouse_button_down(0) is False:
+            mouse.grab = False
+        
+        
+        if is_mouse_button_down(0) and self.selected and mouse.grab is True:
+            # Move 
+            self.selected.position = vector2_add(self.selected.position, mouse.delta)
+        
+        
     def ClickSelectObject(self) -> GameObject:
         try:
             self.selected.is_selected = False
@@ -121,11 +137,10 @@ class GameEngine:
         except:
             pass
         selection_distance = math.inf
-        mouse_position = get_mouse_position()
         temp_selected = None
         
         for g in self.gameobjects:
-            distance_to_object = vector2_length(vector2_subtract(mouse_position, g.position))
+            distance_to_object = vector2_length(vector2_subtract(self.mouse.world_position, g.position))
             
             if distance_to_object < self.select_radius and distance_to_object < selection_distance:
                 temp_selected = g
@@ -133,7 +148,18 @@ class GameEngine:
             self.selected = temp_selected
             self.selected.is_selected = True
     
-    
+
+class Mouse(ScreenLogger):
+    def __init__(self):
+        self.position =  Vector2(0, 0)
+        self.world_position = Vector2(0, 0)
+        self.delta = Vector2(0, 0)
+        self.grab = False
+        
+    def LogOnScreen(self):
+        return f'Pos({self.position.x:.0f}; {self.position.y:.0f})\t-\tWorldPos({self.world_position.x:.0f}; {self.world_position.y:.0f})'
+
+
     
 def main():
     engine = GameEngine()
