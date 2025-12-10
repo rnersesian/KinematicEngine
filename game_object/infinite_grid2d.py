@@ -10,7 +10,7 @@ class InfiniteGrid2D(GameObject):
         self.cell_height: float = cell_height
 
 
-    def Draw(self):
+    def Draw(self) -> None:
         v1 = Vector2(0,0)
         v2 = Vector2(0,0)
         for x in range(-2000, 3000, self.cell_width):

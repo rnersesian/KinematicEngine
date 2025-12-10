@@ -5,5 +5,5 @@ class ScreenLogger(ABC):
         pass
     
     @abstractmethod
-    def LogOnScreen(self):
+    def LogOnScreen(self) -> str:
         pass

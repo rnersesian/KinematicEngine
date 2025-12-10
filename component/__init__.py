@@ -8,7 +8,7 @@ class Component(ABC):
         self.enabled = True
 
     @abstractmethod
-    def update(delta: float) -> None:
+    def update(self, delta: float) -> None:
         pass
 
 __all__ = ["Component"]

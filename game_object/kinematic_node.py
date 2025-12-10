@@ -9,5 +9,5 @@ class KinematicNode(GameObject):
         self.radius = radius
     
 
-    def Draw(self):
+    def Draw(self) -> None:
         draw_circle_v(self.position, self.radius, YELLOW)

@@ -36,7 +36,7 @@ class GameEngine:
         self.DebugList: list[ScreenLogger] = [self.mouse, self.gameobjects[2]]
         
         
-    def Run(self):
+    def Run(self) -> None:
         init_window(self.window_width, self.window_height, self.window_name)
         
         while not window_should_close():
@@ -53,7 +53,7 @@ class GameEngine:
         close_window()
 
         
-    def DrawGizmo(self):
+    def DrawGizmo(self) -> None:
         """Drawing gizmo with X and Y axis"""
         if self.selected is None:
             return
@@ -82,7 +82,7 @@ class GameEngine:
         )
         
 
-    def Update(self):
+    def Update(self) -> None:
         """Where the behaviour of the engine is coded"""
         # Manage time variables
         self.delta = get_frame_time()
@@ -103,7 +103,7 @@ class GameEngine:
         self.DrawGizmo()
 
 
-    def ManageMouse(self):
+    def ManageMouse(self) -> None:
         mouse = self.mouse
         # Update mouse data
         mouse.position = get_mouse_position()
@@ -130,7 +130,7 @@ class GameEngine:
             self.selected.position = vector2_add(self.selected.position, mouse.delta)
         
         
-    def ClickSelectObject(self) -> GameObject:
+    def ClickSelectObject(self) -> None:
         try:
             self.selected.is_selected = False
             self.selected = None
@@ -156,12 +156,12 @@ class Mouse(ScreenLogger):
         self.delta = Vector2(0, 0)
         self.grab = False
         
-    def LogOnScreen(self):
+    def LogOnScreen(self) -> str:
         return f'Pos({self.position.x:.0f}; {self.position.y:.0f})\t-\tWorldPos({self.world_position.x:.0f}; {self.world_position.y:.0f})'
 
 
     
-def main():
+def main() -> None:
     engine = GameEngine()
     engine.Run()
 
