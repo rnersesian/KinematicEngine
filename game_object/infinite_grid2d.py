@@ -1,16 +1,17 @@
 from pyray import *
 from . import GameObject
 
-class InfiniteGrid2D(GameObject):
+class InfiniteGrid2D:
     # TODO: Not urgent, make it infinite
     
-    def __init__(self, cell_wdith: float, cell_height: float, show_grid=True, position=Vector2(0,0), rotation=0, parent=None):
-        super().__init__(position, rotation, parent)
+    def __init__(self, cell_wdith: float, cell_height: float, show_grid=True, rotation=0):
         self.cell_width: float = cell_wdith
         self.cell_height: float = cell_height
+        self.show_grid = show_grid
+        self.rotation: float = rotation
 
 
-    def Draw(self) -> None:
+    def draw(self) -> None:
         v1 = Vector2(0,0)
         v2 = Vector2(0,0)
         for x in range(-2000, 3000, self.cell_width):
@@ -24,4 +25,3 @@ class InfiniteGrid2D(GameObject):
             v1.x = -2000
             v2.x = 3000
             draw_line_v(v1, v2, GRAY)
-                

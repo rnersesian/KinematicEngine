@@ -11,45 +11,48 @@ class GameObject(ScreenLogger, ABC):
         self.scale = Vector2(1,1)
         self.parent = parent
         self.is_selected = False
-        self.rect: Rectangle = Rectangle(-20, -20, 40, 40)
+        self.rect: Rectangle = Rectangle(0, 0, 0, 0)
 
-    def Draw(self) -> None:
-        if self.is_selected is True:
-             draw_rectangle_lines(
-                int(self.position.x + self.rect.x),
-                int(self.position.y + self.rect.y),
-                int(self.rect.width),
-                int(self.rect.height),
-                BLUE
-            )
+    @abstractmethod
+    def draw(self) -> None:
+        pass
 
-    def Update(self) -> None:
+    def update(self) -> None:
         """GameObject's behaviour each frame"""
         pass
     
-    def Translate(self, vec2: Vector2) -> None:
+    def translate(self, vec2: Vector2) -> None:
         """Add vector to position"""
         self.position = vector2_add(self.position, vec2)
         
-    def Rotate(self, amount: float) -> None:
+    def rotate(self, amount: float) -> None:
         """Add amount to rotation"""
         self.rotation += amount
 
-    def Scale(self, amount: Vector2) -> None:
+    def scale(self, amount: Vector2) -> None:
         """Multiply gameobject's scale"""
         self.scale.x *= amount.x
         self.scale.y *= amount.y
 
-    def LogOnScreen(self) -> str:
+    def log_on_screen(self) -> str:
         """By default, shows gameobject's position, scale and rotation"""
         return f'GameObject - Pos({int(self.position.x)}; {int(self.position.y)})\t - Scale({self.scale.x:.2f}; {self.scale.y:.2f})\t - Rot({self.rotation:.2f})'
 
-    def UpdateRect(self, x: float, y: float, w: float, h: float) -> None:
+    def update_rect(self, x: float, y: float, w: float, h: float) -> None:
         """Update gameobject rect (used mainly for selection)"""
         self.rect.x = x
         self.rect.y = y
         self.rect.width = w
         self.rect.height = h
+        
+    def draw_rect(self):
+        draw_rectangle_lines(
+            int(self.position.x + self.rect.x),
+            int(self.position.y + self.rect.y),
+            int(self.rect.width),
+            int(self.rect.height),
+            BLUE
+        )
         
 from .kinematic_node import KinematicNode
 from .infinite_grid2d import InfiniteGrid2D

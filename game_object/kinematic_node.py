@@ -8,9 +8,9 @@ class KinematicNode(GameObject):
         super().__init__(position, rotation, parent)
         self.radius = radius
         
-        self.UpdateRect(-radius, -radius, radius * 2, radius * 2)
+        self.update_rect(-radius, -radius, radius * 2, radius * 2)
     
 
-    def Draw(self) -> None:
-        super().Draw()
+    def draw(self) -> None:
+        super().draw()
         draw_circle_v(self.position, self.radius, YELLOW)
