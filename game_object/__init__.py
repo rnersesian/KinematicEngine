@@ -7,18 +7,21 @@ class GameObject(ScreenLogger, ABC):
     def __init__(self, position: Vector2 = Vector2(0, 0), rotation: float = 0, parent = None):
         self.children: list[GameObject] = []
         self.position: Vector2 = position
-        self.rotation: float = rotation # TODO: Make it a property
+        self.rotation: float = rotation # TODO: Make it a property if clamping value is needed
         self.scale = Vector2(1,1)
         self.parent = parent
         self.is_selected = False
-        
-        # property variables
-        self._rect: Rectangle = Rectangle(-2, -2, 4, 4)
+        self.rect: Rectangle = Rectangle(-20, -20, 40, 40)
 
-    @abstractmethod
     def Draw(self) -> None:
-        """Draw function to be overridden"""
-        pass
+        if self.is_selected is True:
+             draw_rectangle_lines(
+                int(self.position.x + self.rect.x),
+                int(self.position.y + self.rect.y),
+                int(self.rect.width),
+                int(self.rect.height),
+                BLUE
+            )
 
     def Update(self) -> None:
         """GameObject's behaviour each frame"""
@@ -28,7 +31,7 @@ class GameObject(ScreenLogger, ABC):
         """Add vector to position"""
         self.position = vector2_add(self.position, vec2)
         
-    def Rotate(self, amount) -> None:
+    def Rotate(self, amount: float) -> None:
         """Add amount to rotation"""
         self.rotation += amount
 
@@ -41,11 +44,15 @@ class GameObject(ScreenLogger, ABC):
         """By default, shows gameobject's position, scale and rotation"""
         return f'GameObject - Pos({int(self.position.x)}; {int(self.position.y)})\t - Scale({self.scale.x:.2f}; {self.scale.y:.2f})\t - Rot({self.rotation:.2f})'
 
-    @property
-    def rect(self) -> Rectangle:
-        return self._rect
+    def UpdateRect(self, x: float, y: float, w: float, h: float) -> None:
+        """Update gameobject rect (used mainly for selection)"""
+        self.rect.x = x
+        self.rect.y = y
+        self.rect.width = w
+        self.rect.height = h
         
 from .kinematic_node import KinematicNode
 from .infinite_grid2d import InfiniteGrid2D
 
 __all__ = ["GameObject", "KinematicNode", "InfiniteGrid2D"]
+Vector2
