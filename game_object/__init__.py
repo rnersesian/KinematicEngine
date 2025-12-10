@@ -54,6 +54,16 @@ class GameObject(ScreenLogger, ABC):
             BLUE
         )
         
+    def is_in_rect(self, point: Vector2) -> bool:
+        """Check if some point is in rect"""
+        return (
+            point.x > self.rect.x + self.position.x and
+            point.y > self.rect.y + self.position.y and
+            point.x < self.rect.x + self.rect.width + self.position.x and
+            point.y < self.rect.y + self.rect.height + self.position.y
+            
+        )
+        
 from .kinematic_node import KinematicNode
 from .infinite_grid2d import InfiniteGrid2D
 

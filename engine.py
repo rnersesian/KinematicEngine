@@ -1,6 +1,6 @@
 from pyray import *
 from game_object import *
-from utils import ScreenLogger
+from utils import *
 import math
 
 class GameEngine:
@@ -49,7 +49,6 @@ class GameEngine:
             
             self.update()
             end_mode_2d()
-
             
             end_drawing()
         close_window()
@@ -95,9 +94,11 @@ class GameEngine:
         
         self.grid.draw()
         
-        
         for gameobject in self.gameobjects:
             gameobject.draw()
+            
+        if self.selected:
+            self.selected.draw_rect()
             
         for i in range(len(self.DebugList)):
             draw_text(self.DebugList[i].log_on_screen(), 20 - int(self.camera.offset.x), 20 - int(self.camera.offset.y) + i * 30, 20, WHITE)
@@ -113,24 +114,21 @@ class GameEngine:
         mouse.delta = get_mouse_delta()
         mouse.world_position = vector2_subtract(mouse.position, self.camera.offset)
         
-        if is_mouse_button_down(2): 
-            # Camera movement with middle click
-            self.camera.offset = vector2_add(self.camera.offset, mouse.delta)
-        
-        elif is_mouse_button_released(0) and vector2_length(mouse.delta) < 0.05:
-            # Select gameobject if mouse is still
-            self.click_select_object()
-            
-        
-        if is_mouse_button_down(0) and self.selected and vector2_distance(mouse.world_position, self.selected.position) < self.select_radius:
+        if is_mouse_button_down(0) and self.selected and self.selected.is_in_rect(mouse.world_position):
             mouse.grab = True
-            
         elif is_mouse_button_down(0) is False:
             mouse.grab = False
         
+        if is_mouse_button_down(2): 
+            # Camera movement with middle click
+            self.camera.offset = vector2_add(self.camera.offset, mouse.delta)
+            mouse.grab = False
+        elif is_mouse_button_released(0) and vector2_length(mouse.delta) < 0.05:
+            # Select gameobject if mouse is still
+            self.click_select_object()
         
         if is_mouse_button_down(0) and self.selected and mouse.grab is True:
-            # Move 
+            # Move grabbed object
             self.selected.position = vector2_add(self.selected.position, mouse.delta)
         
         
@@ -146,25 +144,16 @@ class GameEngine:
         
         for g in self.gameobjects:
             distance_to_object = vector2_length(vector2_subtract(self.mouse.world_position, g.position))
+            click_in_rect = g.is_in_rect(self.mouse.world_position)
             
-            if distance_to_object < self.select_radius and distance_to_object < selection_distance:
+            if click_in_rect and distance_to_object < selection_distance:
                 temp_selected = g
+                
         if temp_selected:
             self.selected = temp_selected
             self.selected.is_selected = True
     
 
-class Mouse(ScreenLogger):
-    def __init__(self):
-        """Initialize mouse with default position, world position, delta, and grab state."""
-        self.position =  Vector2(0, 0)
-        self.world_position = Vector2(0, 0)
-        self.delta = Vector2(0, 0)
-        self.grab = False
-        
-    def log_on_screen(self) -> str:
-        """Return formatted string with mouse screen and world positions for debug display."""
-        return f'Pos({self.position.x:.0f}; {self.position.y:.0f})\t-\tWorldPos({self.world_position.x:.0f}; {self.world_position.y:.0f})'
 
 
     
