@@ -7,11 +7,10 @@ class GameEngine:
     
     def __init__(self, window_width=1200, window_height=900, window_name="KinematicEngine"):
         """Initialize the game engine with window settings and default game objects."""
-        self.gameobjects: list[GameObject] = [
-            KinematicNode(position=Vector2(200, 200)),
-            KinematicNode(position=Vector2(400, 300)),
-            KinematicNode(position=Vector2(350, 550)),
-        ]
+        self.root = GameObject()
+        
+        self.root.add_child(KinematicSkeleton(position=Vector2(500, 700), node_radiuses=[30,40,20,10,5]))
+
         self.selected: GameObject = None
         self.select_radius: float = 5.
         
@@ -34,7 +33,9 @@ class GameEngine:
         
         self.background_color: Color = DARKGRAY
         
-        self.DebugList: list[ScreenLogger] = [self.mouse, self.gameobjects[2]]
+        self.DebugList: list[ScreenLogger] = [self.mouse]
+        
+        self.debug_mode = False
         
         
     def run(self) -> None:
@@ -94,7 +95,7 @@ class GameEngine:
         
         self.grid.draw()
         
-        for gameobject in self.gameobjects:
+        for gameobject in self.root.children:
             gameobject.draw()
             
         if self.selected:
@@ -127,7 +128,7 @@ class GameEngine:
             # Select gameobject if mouse is still
             self.click_select_object()
         
-        if is_mouse_button_down(0) and self.selected and mouse.grab is True:
+        if is_mouse_button_down(0) and self.selected and mouse.grab is True and vector2_length(mouse.delta) > 0:
             # Move grabbed object
             self.selected.position = vector2_add(self.selected.position, mouse.delta)
         
@@ -142,7 +143,7 @@ class GameEngine:
         selection_distance = math.inf
         temp_selected = None
         
-        for g in self.gameobjects:
+        for g in self.root.list_all_gameobjects():
             distance_to_object = vector2_length(vector2_subtract(self.mouse.world_position, g.position))
             click_in_rect = g.is_in_rect(self.mouse.world_position)
             

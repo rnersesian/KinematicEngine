@@ -1,20 +1,32 @@
 from pyray import *
 from utils import ScreenLogger
-from abc import ABC, abstractmethod
-import math
+from typing import Generator
 
-class GameObject(ScreenLogger, ABC):
+class GameObject(ScreenLogger):
     def __init__(self, position: Vector2 = Vector2(0, 0), rotation: float = 0, parent = None):
         self.children: list[GameObject] = []
-        self.position: Vector2 = position
+        self._position: Vector2 = position
         self.rotation: float = rotation # TODO: Make it a property if clamping value is needed
         self.scale = Vector2(1,1)
         self.parent = parent
         self.is_selected = False
         self.rect: Rectangle = Rectangle(0, 0, 0, 0)
+        self.name = "" #TODO: take care when gameexplorer is implemented
+        
+    @property
+    def position(self) -> Vector2:
+        return self._position
+    
+    @position.setter
+    def position(self, value: Vector2):
+        self._position = value
 
-    @abstractmethod
     def draw(self) -> None:
+        for child in self.children:
+            child.draw()
+    
+    def draw_debug(self) -> None:
+        """What should be displayed when debug mode is on"""
         pass
 
     def update(self) -> None:
@@ -24,12 +36,17 @@ class GameObject(ScreenLogger, ABC):
     def translate(self, vec2: Vector2) -> None:
         """Add vector to position"""
         self.position = vector2_add(self.position, vec2)
+    
+    def set_position(self, vec2: Vector2) -> None:
+        self._position = vec2
+    
         
     def rotate(self, amount: float) -> None:
         """Add amount to rotation"""
         self.rotation += amount
+        
 
-    def scale(self, amount: Vector2) -> None:
+    def scale(self, amount: Vector2) -> None: # TODO make it actually do something
         """Multiply gameobject's scale"""
         self.scale.x *= amount.x
         self.scale.y *= amount.y
@@ -60,12 +77,23 @@ class GameObject(ScreenLogger, ABC):
             point.x > self.rect.x + self.position.x and
             point.y > self.rect.y + self.position.y and
             point.x < self.rect.x + self.rect.width + self.position.x and
-            point.y < self.rect.y + self.rect.height + self.position.y
-            
+            point.y < self.rect.y + self.rect.height + self.position.y   
         )
+    
+    def add_child(self, child: GameObject) -> None:
+        """Add child to GameObject"""
+        self.children.append(child)
+        child.parent = self
         
+    def list_all_gameobjects(self) -> Generator[GameObject, None, None]:
+        for gameobject in self.children:
+            yield gameobject
+            if len(gameobject.children) > 0:
+                yield from gameobject.list_all_gameobjects()
+
+            
 from .kinematic_node import KinematicNode
 from .infinite_grid2d import InfiniteGrid2D
+from .kinematic_skeleton import KinematicSkeleton
 
-__all__ = ["GameObject", "KinematicNode", "InfiniteGrid2D"]
-Vector2
+__all__ = ["GameObject", "KinematicNode", "InfiniteGrid2D", "KinematicSkeleton"]

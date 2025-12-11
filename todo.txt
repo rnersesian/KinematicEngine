@@ -1,5 +1,9 @@
-- Make selection area modular
+- Make selection area modular -> Clickable().onClick
+    - ex: gameobjects' onclick will select it, menu item's may do     other things 
 
 - Gameobject explorer
 
 - Basic Component System
+
+- Kinematic Skeleton
+    - Add constraints on angles
