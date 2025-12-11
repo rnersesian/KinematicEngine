@@ -57,8 +57,6 @@ class GameEngine:
         
     def draw_gizmo(self) -> None:
         """Drawing gizmo with X and Y axis"""
-        if self.selected is None:
-            return
         draw_line(
             int(self.selected.position.x),
             int(self.selected.position.y),
@@ -97,14 +95,14 @@ class GameEngine:
         
         for gameobject in self.root.children:
             gameobject.draw()
-            
+        
         if self.selected:
             self.selected.draw_rect()
+            self.draw_gizmo()
             
         for i in range(len(self.DebugList)):
             draw_text(self.DebugList[i].log_on_screen(), 20 - int(self.camera.offset.x), 20 - int(self.camera.offset.y) + i * 30, 20, WHITE)
         
-        self.draw_gizmo()
 
 
     def manage_mouse(self) -> None:

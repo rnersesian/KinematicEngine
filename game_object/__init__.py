@@ -15,13 +15,16 @@ class GameObject(ScreenLogger):
         
     @property
     def position(self) -> Vector2:
+        """Get the position of the GameObject"""
         return self._position
-    
+
     @position.setter
     def position(self, value: Vector2):
+        """Set the position of the GameObject"""
         self._position = value
 
     def draw(self) -> None:
+        """Draw the GameObject and all its children"""
         for child in self.children:
             child.draw()
     
@@ -38,9 +41,10 @@ class GameObject(ScreenLogger):
         self.position = vector2_add(self.position, vec2)
     
     def set_position(self, vec2: Vector2) -> None:
+        """Set position directly without triggering property setter"""
         self._position = vec2
-    
-        
+
+
     def rotate(self, amount: float) -> None:
         """Add amount to rotation"""
         self.rotation += amount
@@ -63,6 +67,7 @@ class GameObject(ScreenLogger):
         self.rect.height = h
         
     def draw_rect(self):
+        """Draw the GameObject's selection rectangle"""
         draw_rectangle_lines(
             int(self.position.x + self.rect.x),
             int(self.position.y + self.rect.y),
@@ -86,6 +91,7 @@ class GameObject(ScreenLogger):
         child.parent = self
         
     def list_all_gameobjects(self) -> Generator[GameObject, None, None]:
+        """Recursively yield all child GameObjects in the hierarchy"""
         for gameobject in self.children:
             yield gameobject
             if len(gameobject.children) > 0:

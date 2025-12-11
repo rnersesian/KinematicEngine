@@ -24,6 +24,7 @@ class KinematicSkeleton(GameObject):
                 self.nodes[i - 1].back = child_to_add
             
     def draw(self):
+        """Draw the skeleton nodes and connecting lines"""
         super().draw()
         for i in range(len(self.nodes) - 1):
             draw_line_v(self.nodes[i].position, self.nodes[i + 1].position, WHITE)

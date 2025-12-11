@@ -5,6 +5,7 @@ class InfiniteGrid2D:
     # TODO: Not urgent, make it infinite
     
     def __init__(self, cell_wdith: float, cell_height: float, show_grid=True, rotation=0):
+        """Initialize the grid with cell dimensions and display settings"""
         self.cell_width: float = cell_wdith
         self.cell_height: float = cell_height
         self.show_grid = show_grid
@@ -12,6 +13,7 @@ class InfiniteGrid2D:
 
 
     def draw(self) -> None:
+        """Draw the grid lines"""
         v1 = Vector2(0,0)
         v2 = Vector2(0,0)
         for x in range(-2000, 3000, self.cell_width):

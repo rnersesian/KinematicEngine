@@ -15,10 +15,12 @@ class KinematicNode(GameObject):
     
     @property
     def position(self) -> Vector2:
+        """Get the position of the KinematicNode"""
         return self._position
-    
+
     @position.setter
     def position(self, value: Vector2):
+        """Set position and propagate changes to connected nodes"""
         self._position = value
         if self.back:
             self.propagate_back()
@@ -36,6 +38,7 @@ class KinematicNode(GameObject):
         pass
     
     def propagate_front(self) -> None:
+        """Update front node position to maintain connection at tangent"""
         if self.front:
             dx = self.front.position.x - self.position.x
             dy = self.front.position.y - self.position.y
@@ -47,6 +50,7 @@ class KinematicNode(GameObject):
             self.front.propagate_front()
 
     def propagate_back(self) -> None:
+        """Update back node position to maintain connection at tangent"""
         if self.back:
             dx = self.back.position.x - self.position.x
             dy = self.back.position.y - self.position.y
